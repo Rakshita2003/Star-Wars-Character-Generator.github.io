@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random star wars character generator</title>
+
+    <!-- Bootstrap 5.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <!-- header -->
+    <header class="pb-3 pt-4 border-bottom bg-dark">
+        <div class="d-flex align-items-center text-white">
+            <img class="p-2" src="https://freesvg.org/img/death-star-bold.png" alt="" width="48" height="48">
+            <span class="fs-4 fw-bold">RANDOM STAR WARS CHARACTER GENERATOR</span>
+        </div>
+    </header>
+
+    <!-- content -->
+    <div class="row align-items-md-stretch m-3 g-2">
+        <div class="col-md-6">
+            <div class="h-100 p-5 text-white bg-dark rounded-3 shadow-lg">
+                <h2>Star Wars Character</h2>
+                <p>
+                    Press the button to generate random Star Wars character
+                    from https://akabab.github.io/starwars-api/
+                </p>
+                <button id="generatorButton" class="btn btn-outline-light" type="button">Generate</button>
+                <hr>
+                <div class="alert-success" id="statusButton"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="h-100 p-2 bg-light border rounded-3 shadow-lg">
+                <div class="container-fluid ">
+                    <h2 class="text-center text-decoration-underline" id="nameStarWarsCharacter">Yoda</h2>
+                    <img class="d-flex mx-auto" id="imageStarWarsCharacter"
+                        src="https://vignette.wikia.nocookie.net/starwars/images/d/d6/Yoda_SWSB.png" alt=""
+                        height="310">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- footer -->
+    <footer class="p-3 text-white border-top bg-dark">© 2022</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        // waiting for the jQuery to load 
+        $(document).ready(function () {
+            // jQuery or Javascrip Code in here
+
+            // base URL for the API calls 
+            const baseUrlStarWarsAPI = 'https://rawcdn.githack.com/akabab/starwars-api/0.2.1/api';
+
+            // getting all the elements
+            const $nameCharacter = $("#nameStarWarsCharacter")
+            const $imgUrl = $("#imageStarWarsCharacter")
+            const $statusButton = $("#statusButton")
+
+            // even listener for the button - click
+            $(document).on("click", "#generatorButton", function () {
+
+                // setting the status - loading
+                $statusButton.text("Loading...")
+                $statusButton.removeClass("alert alert-success alert-danger");
+
+                // finding the number of charcters in the API - last charcter ID
+                $.get(returnURLStarWarsAPI(baseUrlStarWarsAPI), (data) => {
+
+                    // getting the random number id url and sending a get request
+                    // radom number is using the data from all charcters and using a pop function we are refering to the last
+                    // elemnt , and checking its ID - this way we know the max ID number
+                    // https://akabab.github.io/starwars-api/api/id/1.json
+                    $.get(returnURLStarWarsAPI(baseUrlStarWarsAPI, returnRandomNumber(data.pop().id)), (characterInfo) => {
+
+                        // Updating the information on the website
+                        $nameCharacter.text(characterInfo["name"]);
+                        $imgUrl.attr("src", characterInfo["image"]);
+                        // setting the status - success
+                        $statusButton.text("SUCCESSFUL !!");
+                        $statusButton.addClass("alert alert-success");
+                    })
+                        .fail(function (error) { // handling failed GET request 
+                            // setting the status - fail
+                            $statusButton.text("Failed !!");
+                            $statusButton.addClass("alert alert-danger");
+                            $nameCharacter.text("NoName");
+                            $imgUrl.attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Error.svg/1200px-Error.svg.png");
+                            console.log("Error handling");
+                        })
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>
